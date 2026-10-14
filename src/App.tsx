@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Mail, Play, MessageCircle, VolumeX, X } from 'lucide-react'
+import { Play, MessageCircle, VolumeX, X } from 'lucide-react'
 import logoSvg from './assets/logo.svg'
 import mobileLogoSvg from './assets/logo-mobile.svg'
 import brand1 from '@/assets/brands/brand1.png'
@@ -20,8 +20,6 @@ import creator6 from '@/assets/creators/creator6.jpg'
 import creator7 from '@/assets/creators/creator7.jpg'
 import creator8 from '@/assets/creators/creator8.jpg'
 import ytSPYbRN2fgM from '@/assets/yt_sPYbRN2fgM.mp4'
-import ytUyPKqaSdLrg from '@/assets/yt_uyPKqaSdLrg.mp4'
-import ytO3lHLShW0 from '@/assets/yt_O3lHLShW0.mp4'
 import ytEr7p1EkNvR0 from '@/assets/yt_Er7p1EkNvR0.mp4'
 import ytM8ZwWxJxdnA from '@/assets/yt_m8ZwWxJxdnA.mp4'
 import ytSRtQmFEhlBE from '@/assets/yt_sRtQmFEhlBE.mp4'
@@ -31,18 +29,15 @@ import vsl9f7n2qmua4 from '@/assets/vsl_9f7n2qmua4.mp4'
 import vslRv00d92adp from '@/assets/vsl_rv00d92adp.mp4'
 import vslUxb2hd6oli from '@/assets/vsl_uxb2hd6oli.mp4'
 import vslCn1y5pm9o1 from '@/assets/vsl_cn1y5pm9o1.mp4'
+import saasIwoeziqb0u from '@/assets/saas_iwoeziqb0u.mp4'
 import adOdmynya6to from '@/assets/ad_odmynya6to.mp4'
 import ad9onin2gc38 from '@/assets/ad_9onin2gc38.mp4'
 import adLra91c1hqv from '@/assets/ad_lra91c1hqv.mp4'
-import adM036mavsm9 from '@/assets/ad_m036mavsm9.mp4'
-import ad9ced1wqktj from '@/assets/ad_9ced1wqktj.mp4'
 import ad37uemr9zv8 from '@/assets/ad_37uemr9zv8.mp4'
-import bananaZoneGif from '@/assets/banana_zone.mp4'
-import reelAq3bwnzyuc from '@/assets/reel_aq3bwnzyuc.mp4'
+import bananaZone from '@/assets/banana_zone.mp4'
 import reel8az46h3zsp from '@/assets/reel_8az46h3zsp.mp4'
 import reel3zke9jtqmv from '@/assets/reel_3zke9jtqmv.mp4'
 import reelEbnd3djra4 from '@/assets/reel_ebnd3djra4.mp4'
-import reelQczmcbr4if from '@/assets/reel_qczmcbr4if.mp4'
 
 /* ─── Tokens ─── */
 const C = {
@@ -79,52 +74,44 @@ const creators = [
   { name: 'Julien Roman', niche: 'Cryptos', subs: '210K', photo: creator8 },
 ]
 
-const brands = [
-  { title: '', client: '', views: '', bg: '#0d0d0d', thumb: ytSPYbRN2fgM, ytId: 's-PYbRN2fgM' },
-  { title: '', client: '', views: '', bg: '#0a0a0a', thumb: ytUyPKqaSdLrg, ytId: 'uyPKqaSdLrg' },
-  { title: '', client: '', views: '', bg: '#0c0c0c', thumb: ytO3lHLShW0, ytId: '-O3lHLS-hW0' },
-  { title: '', client: '', views: '', bg: '#111111', thumb: ytEr7p1EkNvR0, ytId: 'Er7p1EkNvR0' },
-  { title: '', client: '', views: '', bg: '#0e0e0e', thumb: ytM8ZwWxJxdnA, ytId: 'm8ZwWxJxdnA' },
-  { title: '', client: '', views: '', bg: '#111', thumb: ytSRtQmFEhlBE, ytId: 'sRtQmFEhlBE' },
+/* Chaque section = 4 vidéos.
+   16:9 → grille 2×2 sur ordi, 1 colonne sur téléphone.
+   9:16 → 4 en ligne sur ordi, 2×2 sur téléphone. */
+
+type VideoItem = { title: string; thumb: string; ytId?: string; wistiaId?: string }
+
+const youtubeVideos: VideoItem[] = [
+  { title: 'Hypercapitalisation', ytId: 'Er7p1EkNvR0', thumb: ytEr7p1EkNvR0 },
+  { title: 'Impôts', ytId: 's-PYbRN2fgM', thumb: ytSPYbRN2fgM },
+  { title: '100K en accompagnement', ytId: 'm8ZwWxJxdnA', thumb: ytM8ZwWxJxdnA },
+  { title: "Comment j'utilise l'IA", ytId: 'sRtQmFEhlBE', thumb: ytSRtQmFEhlBE },
 ]
 
-const redVideos = [
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'rv00d92adp', thumb: vslRv00d92adp },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'uxb2hd6oli', thumb: vslUxb2hd6oli },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'cn1y5pm9o1', thumb: vslCn1y5pm9o1 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'tm4p5wf5de', thumb: vslTm4p5wf5de },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '9f7n2qmua4', thumb: vsl9f7n2qmua4 },
-  { title: '', client: '', views: '', bg: '#111', ytId: 'y0xfbzMChcw', thumb: vslY0xfbzMChcw },
+const saasVideos: VideoItem[] = [
+  { title: 'Wise', wistiaId: 'iwoeziqb0u', thumb: saasIwoeziqb0u },
+  { title: 'Any style', wistiaId: 'tm4p5wf5de', thumb: vslTm4p5wf5de },
+  { title: 'Notion', wistiaId: 'cn1y5pm9o1', thumb: vslCn1y5pm9o1 },
 ]
 
-const productions = [
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'odmynya6to', thumb: adOdmynya6to },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '9onin2gc38', thumb: ad9onin2gc38 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'lra91c1hqv', thumb: adLra91c1hqv },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'm036mavsm9', thumb: adM036mavsm9 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '9ced1wqktj', thumb: ad9ced1wqktj },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '37uemr9zv8', thumb: ad37uemr9zv8 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'odmynya6to', thumb: adOdmynya6to },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '9onin2gc38', thumb: ad9onin2gc38 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'lra91c1hqv', thumb: adLra91c1hqv },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'm036mavsm9', thumb: adM036mavsm9 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '9ced1wqktj', thumb: ad9ced1wqktj },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '37uemr9zv8', thumb: ad37uemr9zv8 },
+const vslVideos: VideoItem[] = [
+  { title: 'LinkedIn', wistiaId: 'rv00d92adp', thumb: vslRv00d92adp },
+  { title: 'Une équipe qui tire la tronche', wistiaId: 'uxb2hd6oli', thumb: vslUxb2hd6oli },
+  { title: '3 tactiques', wistiaId: '9f7n2qmua4', thumb: vsl9f7n2qmua4 },
+  { title: 'Transmettre un capital', ytId: 'y0xfbzMChcw', thumb: vslY0xfbzMChcw },
 ]
 
-const reels = [
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'qczmcbr4if', thumb: reelQczmcbr4if },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'ebnd3djra4', thumb: reelEbnd3djra4 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '3zke9jtqmv', thumb: reel3zke9jtqmv },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '8az46h3zsp', thumb: reel8az46h3zsp },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'pws8nqpnwh', thumb: bananaZoneGif },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'aq3bwnzyuc', thumb: reelAq3bwnzyuc },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'qczmcbr4if', thumb: reelQczmcbr4if },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'ebnd3djra4', thumb: reelEbnd3djra4 },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '3zke9jtqmv', thumb: reel3zke9jtqmv },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: '8az46h3zsp', thumb: reel8az46h3zsp },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'pws8nqpnwh', thumb: bananaZoneGif },
-  { title: '', client: '', views: '', bg: '#111', wistiaId: 'aq3bwnzyuc', thumb: reelAq3bwnzyuc },
+const adsVideos: VideoItem[] = [
+  { title: 'Business IA', wistiaId: '37uemr9zv8', thumb: ad37uemr9zv8 },
+  { title: 'Un an plus tard', wistiaId: 'odmynya6to', thumb: adOdmynya6to },
+  { title: 'Le recrutement', wistiaId: '9onin2gc38', thumb: ad9onin2gc38 },
+  { title: '100% gratuit', wistiaId: 'lra91c1hqv', thumb: adLra91c1hqv },
+]
+
+const reelsVideos: VideoItem[] = [
+  { title: 'Des millions de dollars', wistiaId: 'ebnd3djra4', thumb: reelEbnd3djra4 },
+  { title: 'Pèse 50 milliards', wistiaId: '3zke9jtqmv', thumb: reel3zke9jtqmv },
+  { title: 'Ton cerveau est programmé', wistiaId: '8az46h3zsp', thumb: reel8az46h3zsp },
+  { title: 'En tout cas', wistiaId: 'pws8nqpnwh', thumb: bananaZone },
 ]
 
 /* ─── Primitives ─── */
@@ -153,6 +140,7 @@ function SectionLabel({ label, color }: { label: string; color: string }) {
 function Navbar() {
   const links = [
     { label: 'Vidéos Youtube', href: '#videos-youtube' },
+    { label: 'Motion SaaS', href: '#motion-saas' },
     { label: 'VSL', href: '#vsl-videos' },
     { label: 'ADS', href: '#ads' },
     { label: 'Reels', href: '#reels' },
@@ -168,7 +156,7 @@ function Navbar() {
       <div className="px-4 md:px-5 grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 md:flex md:justify-between md:gap-5">
         <img src={mobileLogoSvg} alt="Martial Production" className="h-11 w-11 object-contain justify-self-start md:hidden" />
         <img src={logoSvg} alt="Martial Production" className="hidden h-16 w-auto justify-self-start md:block" style={{ maxWidth: 280 }} />
-        <div className="hidden md:flex md:w-auto md:items-center md:justify-center md:gap-5">
+        <div className="hidden lg:flex lg:w-auto lg:items-center lg:justify-center lg:gap-5">
           {links.map(link => (
             <a
               key={link.href}
@@ -179,51 +167,50 @@ function Navbar() {
             </a>
           ))}
         </div>
-        <div className="col-start-2 row-start-1 md:col-auto md:row-auto flex items-center gap-2">
-          <a
-            href="https://wa.me/33642908005"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Contacter sur WhatsApp"
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[#25D366]/40 bg-[#25D366] px-4 text-xs font-bold text-white shadow-[0_0_0_4px_rgba(37,211,102,0.12)] transition-transform hover:scale-105"
-          >
-            <MessageCircle className="h-5 w-5" strokeWidth={2.4} />
-            <span className="hidden sm:inline">Me contacter</span>
-          </a>
-          <a
-            href="https://www.instagram.com/martialproduction/"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Voir Martial Production sur Instagram"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white shadow-[0_0_0_4px_rgba(225,48,108,0.12)] transition-transform hover:scale-105"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect width="18" height="18" x="3" y="3" rx="5" />
-              <circle cx="12" cy="12" r="4" />
-              <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
-            </svg>
-          </a>
-          <a
-            href="mailto:contact@martialproduction.fr"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Envoyer un e-mail à Martial Production"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition-transform hover:scale-105 hover:bg-white/15"
-          >
-            <Mail className="h-5 w-5" strokeWidth={2.2} />
-          </a>
+        <div className="col-start-2 row-start-1 md:col-auto md:row-auto flex items-center gap-4">
+          <RdvButton />
+          <WhatsAppButton />
         </div>
       </div>
     </motion.nav>
+  )
+}
+
+/* ─── Boutons de contact ─── */
+
+const WHATSAPP_URL = 'https://wa.me/33642908005'
+const CALENDLY_URL = 'https://calendly.com/martialproduction/call30min'
+const CALENDLY_SCRIPT = 'https://assets.calendly.com/assets/external/widget.js'
+
+/** Bouton sombre avec pastille rouge → descend jusqu'au Calendly en bas de page */
+function RdvButton() {
+  return (
+    <a
+      href="#rendez-vous"
+      className="relative inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-[#1b1b1b] px-4 text-[11px] font-bold uppercase tracking-wide text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] transition-all hover:scale-[1.03] hover:border-white/25 hover:bg-[#232323] md:px-5 md:text-xs"
+    >
+      <span className="min-[380px]:hidden">Rendez-vous</span>
+      <span className="hidden min-[380px]:inline">Prendre un rendez-vous</span>
+      <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3" aria-hidden="true">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f05252] opacity-60" />
+        <span className="relative inline-flex h-3 w-3 rounded-full bg-[#f05252]" />
+      </span>
+    </a>
+  )
+}
+
+/** Bouton rond vert avec halo → WhatsApp */
+function WhatsAppButton({ large = false }: { large?: boolean }) {
+  return (
+    <a
+      href={WHATSAPP_URL}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Me contacter sur WhatsApp"
+      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-[#4fce5d] text-white shadow-[0_0_0_4px_rgba(79,206,93,0.2),0_0_0_8px_rgba(79,206,93,0.08)] transition-transform hover:scale-105 ${large ? 'h-12 w-12' : 'h-10 w-10'}`}
+    >
+      <MessageCircle className={large ? 'h-6 w-6' : 'h-5 w-5'} strokeWidth={2.4} />
+    </a>
   )
 }
 
@@ -297,7 +284,7 @@ function VSLSection() {
   }
 
   return (
-    <section id="vsl" className="mx-auto pb-6" style={{ maxWidth: 1040, paddingInline: 'clamp(2rem, 6vw, 6rem)' }}>
+    <section id="vsl" className="mx-auto pb-6 w-[calc(100%-2rem)] max-w-[900px]">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -528,9 +515,19 @@ function CreateursSection() {
   )
 }
 
-/* ─── Video Carousel ─── */
+/* ─── Video Grid ─── */
 
-type VideoItem = { title: string; client: string; views: string; bg: string; type?: string; name?: string; duration?: string; thumb?: string; ytId?: string; wistiaId?: string }
+function AutoVideo({ src, label, className, style }: { src: string; label: string; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    v.muted = true
+    v.defaultMuted = true
+    v.play().catch(() => {})
+  }, [])
+  return <video ref={ref} src={src} aria-label={label} muted loop playsInline preload="metadata" className={className} style={style} />
+}
 
 function WistiaModal({ mediaId, onClose, vertical = false }: { mediaId: string; onClose: () => void; vertical?: boolean }) {
   React.useEffect(() => {
@@ -568,95 +565,21 @@ function WistiaModal({ mediaId, onClose, vertical = false }: { mediaId: string; 
   )
 }
 
-function AutoVideo({ src, label, className, style }: { src: string; label: string; className?: string; style?: React.CSSProperties }) {
-  const ref = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const v = ref.current
-    if (!v) return
-    v.muted = true
-    v.defaultMuted = true
-    v.play().catch(() => {})
-  }, [])
-  return <video ref={ref} src={src} aria-label={label} muted loop playsInline preload="metadata" className={className} style={style} />
-}
-
-function VideoCarousel({ items, label, accent, dotColor = accent, vertical = false, id }: { items: VideoItem[]; label: string; accent: string; dotColor?: string; vertical?: boolean; id: string }) {
-  const [viewW, setViewW] = useState(() => window.innerWidth)
-  useEffect(() => {
-    const onResize = () => setViewW(window.innerWidth)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-  const baseCardW = vertical ? 200 : 320
-  const isMobile = viewW < 640
-  const visibleCount = isMobile
-    ? (vertical ? 4 : 2.15)
-    : (vertical ? 3.2 : 1.5)
-  const cardW = Math.min(baseCardW, Math.floor((viewW - 32) / visibleCount))
-  const gap = isMobile ? 12 : 16
-  const totalW = items.length * (cardW + gap)
-  const duration = Math.round(totalW / 40)
+function VideoGrid({ items, label, accent, dotColor = accent, vertical = false, id }: { items: VideoItem[]; label: string; accent: string; dotColor?: string; vertical?: boolean; id: string }) {
   const [activeWistia, setActiveWistia] = useState<string | null>(null)
-  const marqueeRef = useRef<HTMLDivElement>(null)
-  const setRate = (rate: number) => marqueeRef.current?.getAnimations()[0]?.updatePlaybackRate(rate)
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { left, width } = e.currentTarget.getBoundingClientRect()
-    const ratio = (e.clientX - left) / width
-    setRate(0.15 + ratio * 6.85)
+
+  const open = (item: VideoItem) => {
+    if (item.ytId) window.open(`https://www.youtube.com/watch?v=${item.ytId}`, '_blank')
+    else if (item.wistiaId) setActiveWistia(item.wistiaId)
   }
 
-  const doubled = [...items, ...items]
-
-  const Card = ({ item, i }: { item: VideoItem; i: number }) => {
-    const title = item.title ?? item.name ?? ''
-    const client = item.client ?? item.type ?? ''
-    const swatch = item.wistiaId ? `https://fast.wistia.com/embed/medias/${item.wistiaId}/swatch` : null
-    return (
-      <div
-        key={i}
-        className="group relative flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:-translate-y-2"
-        style={{ width: cardW, aspectRatio: vertical ? '9/16' : '16/9', background: item.bg, border: `1px solid ${accent}22` }}
-        onClick={() => {
-          if (item.ytId) window.open(`https://www.youtube.com/watch?v=${item.ytId}`, '_blank')
-          else if (item.wistiaId) setActiveWistia(item.wistiaId)
-        }}
-      >
-        {item.thumb ? (
-          <AutoVideo src={item.thumb} label={title} className="absolute inset-0 w-full h-full object-cover" style={{ opacity: 0.95 }} />
-        ) : item.wistiaId ? (
-          <div className="absolute inset-0 pointer-events-none">
-            {/* @ts-ignore */}
-            <wistia-player
-              media-id={item.wistiaId}
-              style={{ display: 'block', width: '100%', height: '100%' }}
-            />
-          </div>
-        ) : null}
-        <div className="absolute inset-0 pointer-events-none" />
-        <PlayBadge color={accent} />
-        {(title || client) && (
-        <div className="absolute bottom-0 left-0 right-0 p-4"
-          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 100%)' }}>
-          {item.type && (
-            <span className="text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded-md mb-1.5 inline-block"
-              style={{ background: `${accent}22`, color: accent }}>{item.type}</span>
-          )}
-          <p className="text-white font-semibold text-sm leading-tight">{title}</p>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-xs text-white/40">{client}</span>
-            {item.views && item.views !== '—' && <span className="text-xs font-semibold" style={{ color: accent }}>{item.views} vues</span>}
-            {item.duration && <span className="text-xs text-white/30">{item.duration}</span>}
-          </div>
-        </div>
-        )}
-      </div>
-    )
-  }
+  // 16:9 avec un nombre impair de vidéos : la dernière est centrée sur sa ligne
+  const isLoneLast = (i: number) => !vertical && items.length % 2 === 1 && i === items.length - 1
 
   return (
     <>
     {activeWistia && <WistiaModal mediaId={activeWistia} vertical={vertical} onClose={() => setActiveWistia(null)} />}
-    <section id={id} className="pb-16 scroll-mt-36">
+    <section id={id} className="pb-16 md:pb-20 scroll-mt-36">
       <div className="max-w-6xl mx-auto px-6 mb-8 flex justify-center">
         <div className="flex items-center gap-3">
           <span
@@ -669,25 +592,27 @@ function VideoCarousel({ items, label, accent, dotColor = accent, vertical = fal
           <span className="text-3xl md:text-4xl font-bold tracking-tight text-white">{label}</span>
         </div>
       </div>
+      {/* Même largeur que le header : w-[calc(100%-2rem)] max-w-[900px] */}
       <div
-        className="relative mx-auto overflow-hidden 2xl:w-[calc(100%-6rem)] 2xl:max-w-[1440px] 2xl:rounded-2xl"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setRate(1)}
+        className={`mx-auto grid w-[calc(100%-2rem)] max-w-[900px] gap-4 md:gap-5 ${vertical ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'}`}
       >
-        {/* Fade left */}
-        <div className="absolute inset-y-0 left-0 w-28 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to right, #0c0c0c 40%, transparent)' }} />
-        {/* Fade right */}
-        <div className="absolute inset-y-0 right-0 w-28 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to left, #0c0c0c 40%, transparent)' }} />
-
-        <div
-          ref={marqueeRef}
-          className="marquee-video flex"
-          style={{ gap, width: 'max-content', '--marquee-duration': `${duration}s` } as React.CSSProperties}
-        >
-          {doubled.map((item, i) => <Card key={i} item={item} i={i} />)}
-        </div>
+        {items.map((item, i) => (
+          <motion.button
+            key={`${item.ytId ?? item.wistiaId}-${i}`}
+            type="button"
+            onClick={() => open(item)}
+            aria-label={`Voir la vidéo : ${item.title}`}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ delay: i * 0.06, duration: 0.5 }}
+            className={`group relative block w-full overflow-hidden rounded-[1.25rem] md:rounded-[1.5rem] bg-[#111] cursor-pointer transition-[translate,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] ${isLoneLast(i) ? 'sm:col-span-2 sm:justify-self-center sm:w-[calc(50%-0.5rem)] md:w-[calc(50%-0.625rem)]' : ''}`}
+            style={{ aspectRatio: vertical ? '9/16' : '16/9', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
+            <AutoVideo src={item.thumb} label={item.title} className="absolute inset-0 w-full h-full object-cover" />
+            <PlayBadge color={accent} />
+          </motion.button>
+        ))}
       </div>
     </section>
     </>
@@ -696,14 +621,74 @@ function VideoCarousel({ items, label, accent, dotColor = accent, vertical = fal
 
 /* ─── Footer CTA ─── */
 
+/** Calendly en ligne (même widget que le code d'intégration Calendly, initialisé côté React) */
+function CalendlyWidget() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    type CalendlyApi = { initInlineWidget: (opts: { url: string; parentElement: HTMLElement }) => void }
+    const getCalendly = () => (window as unknown as { Calendly?: CalendlyApi }).Calendly
+    const init = () => {
+      const el = ref.current
+      const Calendly = getCalendly()
+      if (!el || !Calendly) return
+      el.innerHTML = ''
+      Calendly.initInlineWidget({
+        // couleurs sombres : appliquées si l'offre Calendly le permet, sinon ignorées
+        url: `${CALENDLY_URL}?background_color=111111&text_color=ffffff&primary_color=d5201f`,
+        parentElement: el,
+      })
+    }
+    if (getCalendly()) { init(); return }
+
+    let script = document.querySelector<HTMLScriptElement>(`script[src="${CALENDLY_SCRIPT}"]`)
+    if (!script) {
+      script = document.createElement('script')
+      script.src = CALENDLY_SCRIPT
+      script.async = true
+      document.body.appendChild(script)
+    }
+    const onError = () => setFailed(true)
+    script.addEventListener('load', init)
+    script.addEventListener('error', onError)
+    // Script bloqué sans erreur (bloqueur de pub, aperçu sécurisé…) → bouton de secours
+    const timer = window.setTimeout(() => { if (!getCalendly()) setFailed(true) }, 5000)
+    return () => {
+      window.clearTimeout(timer)
+      script?.removeEventListener('load', init)
+      script?.removeEventListener('error', onError)
+    }
+  }, [])
+
+  return (
+    <div id="rendez-vous" className="scroll-mt-36 -mx-3 overflow-hidden sm:mx-0 sm:rounded-2xl">
+      {failed ? (
+        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-14">
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-[#d5201f] px-7 text-sm font-bold text-white transition-transform hover:scale-[1.03]"
+          >
+            Réserver un appel de 30 min
+          </a>
+        </div>
+      ) : (
+        <div ref={ref} style={{ minWidth: 'min(320px, 100%)', height: 700 }} />
+      )}
+    </div>
+  )
+}
+
 function FooterCTA() {
   return (
-    <section id="contact" className="max-w-6xl mx-auto px-2 sm:px-6 pt-2 pb-24">
+    <section id="contact" className="mx-auto w-[calc(100%-2rem)] max-w-[900px] pt-2 pb-24">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="rounded-3xl px-3 py-10 sm:p-12 md:p-20 text-center"
+        className="rounded-3xl px-3 py-10 sm:px-8 sm:py-12 md:px-10 md:py-16 text-center"
         style={{
           background: 'linear-gradient(135deg, #1a0505, #0c0c0c)',
           border: '1px solid rgba(213,32,31,0.2)',
@@ -716,16 +701,11 @@ function FooterCTA() {
         <p className="mt-6 whitespace-nowrap text-[clamp(0.46rem,2.3vw,0.875rem)] sm:text-sm text-white/50 leading-relaxed">
           Créateur, marque ou agence — discutons de votre prochain projet vidéo.
         </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="https://wa.me/33642908005"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/40 bg-[#25D366] px-4 py-4 text-sm font-semibold text-white shadow-[0_0_0_4px_rgba(37,211,102,0.12)] transition-all hover:scale-[1.03] sm:px-8"
-          >
-            <MessageCircle className="h-5 w-5" strokeWidth={2.4} />
-            Me contacter
-          </a>
+        <div className="mt-10">
+          <CalendlyWidget />
+        </div>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <WhatsAppButton large />
           <a
             href="https://www.instagram.com/martialproduction/"
             target="_blank"
@@ -747,15 +727,6 @@ function FooterCTA() {
               <circle cx="12" cy="12" r="4" />
               <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
             </svg>
-          </a>
-          <a
-            href="mailto:contact@martialproduction.fr"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Envoyer un e-mail à Martial Production"
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition-transform hover:scale-105 hover:bg-white/15"
-          >
-            <Mail className="h-5 w-5" strokeWidth={2.2} />
           </a>
         </div>
       </motion.div>
@@ -954,10 +925,11 @@ export default function App() {
       <VSLSection />
       <BrandBanner />
       <CreateursSection />
-      <VideoCarousel id="videos-youtube" items={brands} label="Vidéos Youtube" accent="rgba(255,255,255,0.5)" dotColor="#d5201f" />
-      <VideoCarousel id="vsl-videos" items={redVideos} label="VSL" accent={C.redLight} dotColor="#f5c842" />
-      <VideoCarousel id="ads" items={productions} label="ADS" accent={C.red} dotColor="#2563eb" vertical />
-      <VideoCarousel id="reels" items={reels} label="Reels" accent="#a855f7" vertical />
+      <VideoGrid id="videos-youtube" items={youtubeVideos} label="Vidéos Youtube" accent="rgba(255,255,255,0.5)" dotColor="#d5201f" />
+      <VideoGrid id="motion-saas" items={saasVideos} label="Motion SaaS" accent="#22d3ee" />
+      <VideoGrid id="vsl-videos" items={vslVideos} label="VSL" accent={C.redLight} dotColor="#f5c842" />
+      <VideoGrid id="ads" items={adsVideos} label="ADS" accent={C.red} dotColor="#2563eb" vertical />
+      <VideoGrid id="reels" items={reelsVideos} label="Reels" accent="#a855f7" vertical />
       <FooterCTA />
       <LegalFooter />
     </div>
