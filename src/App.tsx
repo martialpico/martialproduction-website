@@ -180,17 +180,56 @@ function Navbar() {
 
 const WHATSAPP_URL = 'https://wa.me/33642908005'
 const CALENDLY_URL = 'https://calendly.com/martialproduction/call30min'
+// Couleurs sombres : appliquées si l'offre Calendly le permet, sinon ignorées
+const CALENDLY_POPUP_URL = `${CALENDLY_URL}?background_color=111111&text_color=ffffff&primary_color=d5201f`
 const CALENDLY_SCRIPT = 'https://assets.calendly.com/assets/external/widget.js'
+const CALENDLY_CSS = 'https://assets.calendly.com/assets/external/widget.css'
 
-/** Bouton sombre avec pastille rouge → descend jusqu'au Calendly en bas de page */
-function RdvButton() {
+type CalendlyApi = { initPopupWidget: (opts: { url: string }) => void }
+const getCalendly = () => (window as unknown as { Calendly?: CalendlyApi }).Calendly
+
+/** Charge une seule fois le script et le style de la pop-up Calendly */
+function loadCalendly() {
+  if (!document.querySelector(`link[href="${CALENDLY_CSS}"]`)) {
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = CALENDLY_CSS
+    document.head.appendChild(link)
+  }
+  if (!document.querySelector(`script[src="${CALENDLY_SCRIPT}"]`)) {
+    const script = document.createElement('script')
+    script.src = CALENDLY_SCRIPT
+    script.async = true
+    document.head.appendChild(script)
+  }
+}
+
+/** Ouvre la pop-up Calendly. Si le script n'a pas pu charger, le lien ouvre Calendly dans un nouvel onglet. */
+function openCalendly(e: React.MouseEvent<HTMLAnchorElement>) {
+  const Calendly = getCalendly()
+  if (!Calendly) return
+  e.preventDefault()
+  Calendly.initPopupWidget({ url: CALENDLY_POPUP_URL })
+}
+
+/** Bouton sombre avec pastille rouge → ouvre la pop-up Calendly */
+function RdvButton({ large = false }: { large?: boolean }) {
   return (
     <a
-      href="#rendez-vous"
-      className="relative inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-[#1b1b1b] px-4 text-[11px] font-bold uppercase tracking-wide text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] transition-all hover:scale-[1.03] hover:border-white/25 hover:bg-[#232323] md:px-5 md:text-xs"
+      href={CALENDLY_URL}
+      target="_blank"
+      rel="noreferrer"
+      onClick={openCalendly}
+      className={`relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-[#1b1b1b] font-bold uppercase tracking-wide text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] transition-all hover:scale-[1.03] hover:border-white/25 hover:bg-[#232323] ${large ? 'h-12 px-7 text-sm' : 'h-10 px-4 text-[11px] md:px-5 md:text-xs'}`}
     >
-      <span className="min-[380px]:hidden">Rendez-vous</span>
-      <span className="hidden min-[380px]:inline">Prendre un rendez-vous</span>
+      {large ? (
+        <span>Prendre un rendez-vous</span>
+      ) : (
+        <>
+          <span className="min-[380px]:hidden">Rendez-vous</span>
+          <span className="hidden min-[380px]:inline">Prendre un rendez-vous</span>
+        </>
+      )}
       <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3" aria-hidden="true">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f05252] opacity-60" />
         <span className="relative inline-flex h-3 w-3 rounded-full bg-[#f05252]" />
@@ -621,66 +660,6 @@ function VideoGrid({ items, label, accent, dotColor = accent, vertical = false, 
 
 /* ─── Footer CTA ─── */
 
-/** Calendly en ligne (même widget que le code d'intégration Calendly, initialisé côté React) */
-function CalendlyWidget() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    type CalendlyApi = { initInlineWidget: (opts: { url: string; parentElement: HTMLElement }) => void }
-    const getCalendly = () => (window as unknown as { Calendly?: CalendlyApi }).Calendly
-    const init = () => {
-      const el = ref.current
-      const Calendly = getCalendly()
-      if (!el || !Calendly) return
-      el.innerHTML = ''
-      Calendly.initInlineWidget({
-        // couleurs sombres : appliquées si l'offre Calendly le permet, sinon ignorées
-        url: `${CALENDLY_URL}?background_color=111111&text_color=ffffff&primary_color=d5201f`,
-        parentElement: el,
-      })
-    }
-    if (getCalendly()) { init(); return }
-
-    let script = document.querySelector<HTMLScriptElement>(`script[src="${CALENDLY_SCRIPT}"]`)
-    if (!script) {
-      script = document.createElement('script')
-      script.src = CALENDLY_SCRIPT
-      script.async = true
-      document.body.appendChild(script)
-    }
-    const onError = () => setFailed(true)
-    script.addEventListener('load', init)
-    script.addEventListener('error', onError)
-    // Script bloqué sans erreur (bloqueur de pub, aperçu sécurisé…) → bouton de secours
-    const timer = window.setTimeout(() => { if (!getCalendly()) setFailed(true) }, 5000)
-    return () => {
-      window.clearTimeout(timer)
-      script?.removeEventListener('load', init)
-      script?.removeEventListener('error', onError)
-    }
-  }, [])
-
-  return (
-    <div id="rendez-vous" className="scroll-mt-36 -mx-3 overflow-hidden sm:mx-0 sm:rounded-2xl">
-      {failed ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-14">
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-[#d5201f] px-7 text-sm font-bold text-white transition-transform hover:scale-[1.03]"
-          >
-            Réserver un appel de 30 min
-          </a>
-        </div>
-      ) : (
-        <div ref={ref} style={{ minWidth: 'min(320px, 100%)', height: 700 }} />
-      )}
-    </div>
-  )
-}
-
 function FooterCTA() {
   return (
     <section id="contact" className="mx-auto w-[calc(100%-2rem)] max-w-[900px] pt-2 pb-24">
@@ -701,10 +680,9 @@ function FooterCTA() {
         <p className="mt-6 whitespace-nowrap text-[clamp(0.46rem,2.3vw,0.875rem)] sm:text-sm text-white/50 leading-relaxed">
           Créateur, marque ou agence — discutons de votre prochain projet vidéo.
         </p>
-        <div className="mt-10">
-          <CalendlyWidget />
-        </div>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-4">
+          <RdvButton large />
+          <div className="flex items-center gap-4">
           <WhatsAppButton large />
           <a
             href="https://www.instagram.com/martialproduction/"
@@ -728,6 +706,7 @@ function FooterCTA() {
               <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
             </svg>
           </a>
+          </div>
         </div>
       </motion.div>
     </section>
@@ -909,6 +888,7 @@ function LegalFooter() {
 /* ─── App root ─── */
 
 export default function App() {
+  React.useEffect(() => { loadCalendly() }, [])
   React.useEffect(() => {
     if (document.querySelector('script[src="https://fast.wistia.com/player.js"]')) return
     const s = document.createElement('script'); s.src = 'https://fast.wistia.com/player.js'; s.async = true; document.head.appendChild(s)
