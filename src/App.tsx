@@ -30,6 +30,7 @@ import vslRv00d92adp from '@/assets/vsl_rv00d92adp.mp4'
 import vslUxb2hd6oli from '@/assets/vsl_uxb2hd6oli.mp4'
 import vslCn1y5pm9o1 from '@/assets/vsl_cn1y5pm9o1.mp4'
 import saasIwoeziqb0u from '@/assets/saas_iwoeziqb0u.mp4'
+import saasA5t1hj78uk from '@/assets/saas_a5t1hj78uk.mp4'
 import adOdmynya6to from '@/assets/ad_odmynya6to.mp4'
 import ad9onin2gc38 from '@/assets/ad_9onin2gc38.mp4'
 import adLra91c1hqv from '@/assets/ad_lra91c1hqv.mp4'
@@ -91,6 +92,7 @@ const saasVideos: VideoItem[] = [
   { title: 'Wise', wistiaId: 'iwoeziqb0u', thumb: saasIwoeziqb0u },
   { title: 'Any style', wistiaId: 'tm4p5wf5de', thumb: vslTm4p5wf5de },
   { title: 'Notion', wistiaId: 'cn1y5pm9o1', thumb: vslCn1y5pm9o1 },
+  { title: 'Airbnb', wistiaId: 'a5t1hj78uk', thumb: saasA5t1hj78uk },
 ]
 
 const vslVideos: VideoItem[] = [
