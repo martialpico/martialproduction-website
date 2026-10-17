@@ -140,7 +140,8 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
         if (favicon) {
           tags.push({ tag: 'link', attrs: { rel: 'icon', href: favicon }, injectTo: 'head' })
         }
-        if (title) {
+        // Pas de doublon : si index.html a déjà ses balises de partage en dur, on garde les siennes
+        if (title && !/property=["']og:title["']/.test(html)) {
           tags.push({ tag: 'meta', attrs: { property: 'og:title', content: title }, injectTo: 'head' })
         }
         if (description) {
