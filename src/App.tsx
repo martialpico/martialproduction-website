@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Play, MessageCircle, VolumeX, X } from 'lucide-react'
+import { Play, MessageCircle, VolumeX, X, ChevronDown, Check } from 'lucide-react'
+import { LangProvider, useLang, type Lang, type LegalSection } from './i18n'
 import logoSvg from './assets/logo.svg'
 import mobileLogoSvg from './assets/logo-mobile.svg'
 import brand1 from '@/assets/brands/brand1.png'
@@ -64,15 +65,17 @@ const stats = [
   { value: '98%', label: 'Clients satisfaits' },
 ]
 
-const creators = [
-  { name: 'Alec Henry', niche: 'Entrepreneuriat', subs: '280K', photo: creator1 },
-  { name: 'Camil Mikolajczack', niche: 'Patrimoine', subs: '195K', photo: creator2 },
-  { name: 'Hugo Gedio', niche: 'LinkedIn', subs: '410K', photo: creator3 },
-  { name: 'Jean Hollaender', niche: 'Business en ligne', subs: '320K', photo: creator4 },
-  { name: 'Jody Cavalie', niche: 'Business en ligne', subs: '155K', photo: creator5 },
-  { name: 'Yann Darwin', niche: 'Immobilier', subs: '230K', photo: creator6 },
-  { name: 'Yomi Denzel', niche: 'E-commerce', subs: '180K', photo: creator7 },
-  { name: 'Julien Roman', niche: 'Cryptos', subs: '210K', photo: creator8 },
+type NicheKey = 'entrepreneurship' | 'wealth' | 'linkedin' | 'onlineBusiness' | 'realEstate' | 'ecommerce' | 'crypto'
+
+const creators: { name: string; niche: NicheKey; subs: string; photo: string }[] = [
+  { name: 'Alec Henry', niche: 'entrepreneurship', subs: '280K', photo: creator1 },
+  { name: 'Camil Mikolajczack', niche: 'wealth', subs: '195K', photo: creator2 },
+  { name: 'Hugo Gedio', niche: 'linkedin', subs: '410K', photo: creator3 },
+  { name: 'Jean Hollaender', niche: 'onlineBusiness', subs: '320K', photo: creator4 },
+  { name: 'Jody Cavalie', niche: 'onlineBusiness', subs: '155K', photo: creator5 },
+  { name: 'Yann Darwin', niche: 'realEstate', subs: '230K', photo: creator6 },
+  { name: 'Yomi Denzel', niche: 'ecommerce', subs: '180K', photo: creator7 },
+  { name: 'Julien Roman', niche: 'crypto', subs: '210K', photo: creator8 },
 ]
 
 /* Chaque section = 4 vidéos.
@@ -140,12 +143,13 @@ function SectionLabel({ label, color }: { label: string; color: string }) {
 /* ─── Navbar ─── */
 
 function Navbar() {
+  const { t } = useLang()
   const links = [
-    { label: 'Vidéos Youtube', href: '#videos-youtube' },
-    { label: 'Motion SaaS', href: '#motion-saas' },
-    { label: 'VSL', href: '#vsl-videos' },
-    { label: 'ADS', href: '#ads' },
-    { label: 'Reels', href: '#reels' },
+    { label: t.nav.youtube, href: '#videos-youtube' },
+    { label: t.nav.saas, href: '#motion-saas' },
+    { label: t.nav.vsl, href: '#vsl-videos' },
+    { label: t.nav.ads, href: '#ads' },
+    { label: t.nav.reels, href: '#reels' },
   ]
 
   return (
@@ -155,10 +159,10 @@ function Navbar() {
       transition={{ duration: 0.6 }}
       className="mobile-header-position fixed left-0 right-0 z-50 w-[calc(100%-2rem)] max-w-[900px] mx-auto py-2.5 md:py-3 rounded-2xl border border-white/10 bg-[#0c0c0c]/90 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.35)]"
     >
-      <div className="px-4 md:px-5 grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 md:flex md:justify-between md:gap-5">
+      <div className="px-4 md:px-5 grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-3 md:flex md:justify-between md:gap-4">
         <img src={mobileLogoSvg} alt="Martial Production" className="h-11 w-11 object-contain justify-self-start md:hidden" />
         <img src={logoSvg} alt="Martial Production" className="hidden h-16 w-auto justify-self-start md:block" style={{ maxWidth: 280 }} />
-        <div className="hidden lg:flex lg:w-auto lg:items-center lg:justify-center lg:gap-5">
+        <div className="hidden lg:flex lg:w-auto lg:items-center lg:justify-center lg:gap-4">
           {links.map(link => (
             <a
               key={link.href}
@@ -169,12 +173,104 @@ function Navbar() {
             </a>
           ))}
         </div>
-        <div className="col-start-2 row-start-1 md:col-auto md:row-auto flex items-center gap-4">
+        <div className="col-start-2 row-start-1 md:col-auto md:row-auto flex items-center gap-2 min-[380px]:gap-3">
+          <LangSwitcher />
           <RdvButton />
           <WhatsAppButton />
         </div>
       </div>
     </motion.nav>
+  )
+}
+
+/* ─── Sélecteur de langue ─── */
+
+function Flag({ lang }: { lang: Lang }) {
+  const id = React.useId().replace(/:/g, '')
+  return (
+    <span className="inline-flex h-[14px] w-5 shrink-0 overflow-hidden rounded-[3px] ring-1 ring-inset ring-white/15" aria-hidden="true">
+      {lang === 'fr' ? (
+        <svg viewBox="0 0 3 2" className="h-full w-full" preserveAspectRatio="none">
+          <rect width="1" height="2" fill="#002395" />
+          <rect x="1" width="1" height="2" fill="#ffffff" />
+          <rect x="2" width="1" height="2" fill="#ed2939" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 60 30" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
+          <clipPath id={`${id}-s`}><path d="M0,0 v30 h60 v-30 z" /></clipPath>
+          <clipPath id={`${id}-t`}><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" /></clipPath>
+          <g clipPath={`url(#${id}-s)`}>
+            <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#ffffff" strokeWidth="6" />
+            <path d="M0,0 L60,30 M60,0 L0,30" clipPath={`url(#${id}-t)`} stroke="#c8102e" strokeWidth="4" />
+            <path d="M30,0 v30 M0,15 h60" stroke="#ffffff" strokeWidth="10" />
+            <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" strokeWidth="6" />
+          </g>
+        </svg>
+      )}
+    </span>
+  )
+}
+
+const LANG_OPTIONS: { code: Lang; label: string }[] = [
+  { code: 'fr', label: 'Français' },
+  { code: 'en', label: 'English' },
+]
+
+/** Pastille drapeau + code + chevron, qui ouvre un petit menu FR / EN */
+function LangSwitcher() {
+  const { lang, setLang, t } = useLang()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onPointer = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false) }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        aria-label={t.nav.language}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen(o => !o)}
+        className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-[#1b1b1b] px-2.5 text-xs font-bold text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] transition-colors hover:border-white/25 hover:bg-[#232323]"
+      >
+        <Flag lang={lang} />
+        <span className="hidden min-[380px]:inline">{lang.toUpperCase()}</span>
+        <ChevronDown className={`hidden h-3.5 w-3.5 text-white/70 transition-transform duration-200 min-[380px]:block ${open ? 'rotate-180' : ''}`} strokeWidth={2.4} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute left-0 top-full z-10 mt-2 min-w-[156px] rounded-2xl border border-white/10 bg-[#111111] p-1 shadow-[0_10px_35px_rgba(0,0,0,0.55)] md:left-auto md:right-0"
+        >
+          {LANG_OPTIONS.map(option => (
+            <button
+              key={option.code}
+              type="button"
+              role="menuitemradio"
+              aria-checked={lang === option.code}
+              onClick={() => { setLang(option.code); setOpen(false) }}
+              className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-white/5 ${lang === option.code ? 'text-white' : 'text-white/60 hover:text-white'}`}
+            >
+              <Flag lang={option.code} />
+              {option.label}
+              {lang === option.code && <Check className="ml-auto h-4 w-4 text-[#f5c842]" strokeWidth={2.6} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -216,20 +312,21 @@ function openCalendly(e: React.MouseEvent<HTMLAnchorElement>) {
 
 /** Bouton sombre avec pastille rouge → ouvre la pop-up Calendly */
 function RdvButton({ large = false }: { large?: boolean }) {
+  const { t } = useLang()
   return (
     <a
       href={CALENDLY_URL}
       target="_blank"
       rel="noreferrer"
       onClick={openCalendly}
-      className={`relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-[#1b1b1b] font-bold uppercase tracking-wide text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] transition-all hover:scale-[1.03] hover:border-white/25 hover:bg-[#232323] ${large ? 'h-12 px-7 text-sm' : 'h-10 px-4 text-[11px] md:px-5 md:text-xs'}`}
+      className={`relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-[#1b1b1b] font-bold uppercase tracking-wide text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] transition-all hover:scale-[1.03] hover:border-white/25 hover:bg-[#232323] ${large ? 'h-12 px-7 text-sm' : 'h-10 px-3 text-[11px] min-[380px]:px-4 md:text-xs'}`}
     >
       {large ? (
-        <span>Prendre un rendez-vous</span>
+        <span>{t.nav.rdv}</span>
       ) : (
         <>
-          <span className="min-[380px]:hidden">Rendez-vous</span>
-          <span className="hidden min-[380px]:inline">Prendre un rendez-vous</span>
+          <span className="sm:hidden">{t.nav.rdvShort}</span>
+          <span className="hidden sm:inline">{t.nav.rdv}</span>
         </>
       )}
       <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3" aria-hidden="true">
@@ -242,12 +339,13 @@ function RdvButton({ large = false }: { large?: boolean }) {
 
 /** Bouton rond vert avec halo → WhatsApp */
 function WhatsAppButton({ large = false }: { large?: boolean }) {
+  const { t } = useLang()
   return (
     <a
       href={WHATSAPP_URL}
       target="_blank"
       rel="noreferrer"
-      aria-label="Me contacter sur WhatsApp"
+      aria-label={t.nav.whatsapp}
       className={`inline-flex shrink-0 items-center justify-center rounded-full bg-[#4fce5d] text-white shadow-[0_0_0_4px_rgba(79,206,93,0.2),0_0_0_8px_rgba(79,206,93,0.08)] transition-transform hover:scale-105 ${large ? 'h-12 w-12' : 'h-10 w-10'}`}
     >
       <MessageCircle className={large ? 'h-6 w-6' : 'h-5 w-5'} strokeWidth={2.4} />
@@ -258,6 +356,7 @@ function WhatsAppButton({ large = false }: { large?: boolean }) {
 /* ─── Hero headline ─── */
 
 function Hero() {
+  const { t } = useLang()
   return (
     <div className="max-w-6xl mx-auto px-6 pt-16 pb-10">
       <motion.div
@@ -266,15 +365,16 @@ function Hero() {
         transition={{ delay: 0.2, duration: 0.8 }}
       >
         <div className="flex items-center gap-2 mb-5 justify-center flex-wrap">
-          <span className="hero-badge" style={{ background: '#f5c842', color: '#0c0c0c' }}>Monteur vidéo</span>
-          <span className="hero-badge" style={{ background: '#f5c842', color: '#0c0c0c' }}>Motion designer</span>
+          {t.hero.badges.map(badge => (
+            <span key={badge} className="hero-badge" style={{ background: '#f5c842', color: '#0c0c0c' }}>{badge}</span>
+          ))}
         </div>
         <h1 className="text-[clamp(1.3rem,6.6vw,1.9rem)] md:text-6xl font-bold tracking-tight leading-[1.08] text-white text-center">
-          <span className="whitespace-nowrap">Je transforme vos idées</span><br />
-          <span className="whitespace-nowrap">en vidéos qui <span className="font-serif-italic">convertissent.</span></span>
+          <span className="whitespace-nowrap">{t.hero.line1}</span><br />
+          <span className="whitespace-nowrap">{t.hero.line2}<span className="font-serif-italic">{t.hero.accent}</span></span>
         </h1>
         <p className="mt-6 text-white/50 text-base max-w-xl leading-relaxed text-center mx-auto">
-          J'accompagne les créateurs et marques qui veulent des vidéos à impact.
+          {t.hero.sub}
         </p>
       </motion.div>
     </div>
@@ -284,6 +384,7 @@ function Hero() {
 /* ─── VSL Section ─── */
 
 function VSLSection() {
+  const { t } = useLang()
   const playerRef = useRef<HTMLElement & { muted: boolean }>(null)
   const [isMuted, setIsMuted] = useState(true)
   const [isPlayerReady, setIsPlayerReady] = useState(false)
@@ -348,11 +449,11 @@ function VSLSection() {
             type="button"
             onClick={toggleSound}
             disabled={!isPlayerReady}
-            aria-label="Activer le son de la vidéo"
+            aria-label={t.vsl.soundAria}
             className="absolute right-3 top-3 z-10 inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#d5201f] px-4 py-3 text-xs font-bold text-white shadow-[0_8px_30px_rgba(0,0,0,0.45),0_0_24px_rgba(213,32,31,0.35)] transition-all hover:scale-[1.03] hover:bg-[#ed2928] disabled:cursor-wait disabled:opacity-60 disabled:hover:scale-100 sm:right-5 sm:top-5 sm:px-5 sm:text-sm"
           >
             <VolumeX className="h-5 w-5" />
-            Activer le son
+            {t.vsl.sound}
           </button>
         )}
       </motion.div>
@@ -389,9 +490,11 @@ function StatsRow() {
 
 const ROTATIONS = [-11, -7, -4, -1, 1, 4, 7, 11]
 
-function CreatorCard({ name, niche, subs, photo, handle, i }: {
-  name: string; niche: string; subs: string; photo: string; handle: string; i: number
+function CreatorCard({ name, niche: nicheKey, subs, photo, handle, i }: {
+  name: string; niche: NicheKey; subs: string; photo: string; handle: string; i: number
 }) {
+  const { t } = useLang()
+  const niche = t.creators.niches[nicheKey]
   const [hovered, setHovered] = useState(false)
   const rotate = ROTATIONS[i] ?? 0
   return (
@@ -532,11 +635,12 @@ function BrandBanner() {
 }
 
 function CreateursSection() {
+  const { t } = useLang()
   return (
     <section id="créateurs" className="pb-20 pt-8">
       <div className="max-w-6xl mx-auto px-6 mb-2 text-center">
         <h2 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.08] text-white">
-          Ils m'ont fait <span className="font-serif-italic">confiance.</span>
+          {t.creators.title}<span className="font-serif-italic">{t.creators.accent}</span>
         </h2>
       </div>
 
@@ -607,6 +711,7 @@ function WistiaModal({ mediaId, onClose, vertical = false }: { mediaId: string; 
 }
 
 function VideoGrid({ items, label, accent, dotColor = accent, vertical = false, id }: { items: VideoItem[]; label: string; accent: string; dotColor?: string; vertical?: boolean; id: string }) {
+  const { t } = useLang()
   const [activeWistia, setActiveWistia] = useState<string | null>(null)
 
   const open = (item: VideoItem) => {
@@ -642,7 +747,7 @@ function VideoGrid({ items, label, accent, dotColor = accent, vertical = false, 
             key={`${item.ytId ?? item.wistiaId}-${i}`}
             type="button"
             onClick={() => open(item)}
-            aria-label={`Voir la vidéo : ${item.title}`}
+            aria-label={t.videos.watch(item.title)}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
@@ -663,6 +768,7 @@ function VideoGrid({ items, label, accent, dotColor = accent, vertical = false, 
 /* ─── Footer CTA ─── */
 
 function FooterCTA() {
+  const { t } = useLang()
   return (
     <section id="contact" className="mx-auto w-[calc(100%-2rem)] max-w-[900px] pt-2 pb-24">
       <motion.div
@@ -677,10 +783,10 @@ function FooterCTA() {
         }}
       >
         <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-[0.88]">
-          Travaillons<br /><span className="font-serif-italic">ensemble.</span>
+          {t.cta.title}<br /><span className="font-serif-italic">{t.cta.accent}</span>
         </h2>
         <p className="mt-6 whitespace-nowrap text-[clamp(0.46rem,2.3vw,0.875rem)] sm:text-sm text-white/50 leading-relaxed">
-          Créateur, marque ou agence — discutons de votre prochain projet vidéo.
+          {t.cta.sub}
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-4">
           <RdvButton large />
@@ -690,7 +796,7 @@ function FooterCTA() {
             href="https://www.instagram.com/martialproduction/"
             target="_blank"
             rel="noreferrer"
-            aria-label="Voir Martial Production sur Instagram"
+            aria-label={t.nav.instagram}
             className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white shadow-[0_0_0_4px_rgba(225,48,108,0.12)] transition-transform hover:scale-105"
           >
             <svg
@@ -720,6 +826,7 @@ function FooterCTA() {
 type LegalPage = 'terms' | 'legal' | 'cookies'
 
 function LegalModal({ page, onClose }: { page: LegalPage; onClose: () => void }) {
+  const { t } = useLang()
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -734,10 +841,22 @@ function LegalModal({ page, onClose }: { page: LegalPage; onClose: () => void })
   }, [onClose])
 
   const titles: Record<LegalPage, string> = {
-    terms: "Conditions d'utilisation",
-    legal: 'Mentions légales',
-    cookies: 'Politique sur les Cookies',
+    terms: t.footer.terms,
+    legal: t.footer.legal,
+    cookies: t.footer.cookies,
   }
+
+  const renderSections = (sections: LegalSection[]) => sections.map(section => (
+    <React.Fragment key={section.title}>
+      <h3>{section.title}</h3>
+      {section.paragraphs?.map(text => <p key={text}>{text}</p>)}
+      {section.list && (
+        <ul>
+          {section.list.map(item => <li key={item.label}><strong>{item.label}</strong> {item.text}</li>)}
+        </ul>
+      )}
+    </React.Fragment>
+  ))
 
   return (
     <div
@@ -756,7 +875,7 @@ function LegalModal({ page, onClose }: { page: LegalPage; onClose: () => void })
         <button
           type="button"
           onClick={onClose}
-          aria-label="Fermer"
+          aria-label={t.footer.close}
           className="absolute right-5 top-5 z-10 rounded-full p-2 text-black transition-colors hover:bg-black/5 md:right-7 md:top-6"
         >
           <X className="h-8 w-8 md:h-11 md:w-11" strokeWidth={2.2} />
@@ -767,90 +886,17 @@ function LegalModal({ page, onClose }: { page: LegalPage; onClose: () => void })
         </h2>
 
         <div className="legal-copy text-sm leading-relaxed md:text-[17px]">
-          {page === 'terms' && (
-            <>
-              <h3>1. Acceptation des Conditions</h3>
-              <p>En accédant ou en utilisant ce site web martialproduction.fr, vous acceptez de vous conformer aux présentes Conditions d'Utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Site.</p>
-
-              <h3>2. Utilisation du Site</h3>
-              <p>2.1. Vous acceptez d'utiliser ce Site conformément à toutes les lois et réglementations applicables, ainsi qu'aux présentes Conditions d'Utilisation.</p>
-              <p>2.2. Vous acceptez de ne pas utiliser le Site à des fins illégales, diffamatoires, abusives, obscènes, offensantes, menaçantes, harcelantes ou en violation des droits de propriété intellectuelle de tiers.</p>
-
-              <h3>3. Contenu du Site</h3>
-              <p>3.1. Le contenu du Site, y compris mais sans s'y limiter, les textes, les images, les vidéos, les graphiques, les logos et les marques de commerce, est protégé par les lois sur les droits d'auteur et les marques de commerce. Tous les droits sur le contenu sont réservés.</p>
-              <p>3.2. Vous ne pouvez pas copier, reproduire, distribuer, publier, afficher publiquement, modifier ou créer des œuvres dérivées à partir du contenu du Site sans notre autorisation préalable écrite.</p>
-
-              <h3>4. Liens Externes</h3>
-              <p>Ce Site peut contenir des liens vers des sites web tiers. Nous ne sommes pas responsables du contenu ou de la disponibilité de ces sites et ne pouvons être tenus responsables de tout préjudice ou dommage résultant de votre utilisation de ces sites.</p>
-
-              <h3>5. Cookies et Collecte de Données</h3>
-              <p>5.1. Ce Site peut utiliser des cookies pour améliorer votre expérience de navigation. En utilisant ce Site, vous consentez à l'utilisation de cookies conformément à notre Politique de Cookies.</p>
-              <p>5.2. Nous pouvons collecter et traiter des informations personnelles conformément à notre Politique de Confidentialité.</p>
-
-              <h3>6. Limitation de Responsabilité</h3>
-              <p>6.1. Nous nous efforçons de maintenir le Site à jour et en bon état de fonctionnement, mais nous ne garantissons pas son accessibilité continue ni l'absence d'erreurs ou de virus.</p>
-              <p>6.2. Dans la mesure permise par la loi, nous déclinons toute responsabilité pour les pertes ou les dommages directs, indirects, spéciaux ou consécutifs découlant de votre utilisation ou de l'incapacité d'utiliser le Site.</p>
-
-              <h3>7. Modifications des Conditions d'Utilisation</h3>
-              <p>Nous nous réservons le droit de modifier les présentes Conditions d'Utilisation à tout moment. Les modifications seront effectives dès leur publication sur le Site. Il vous incombe de consulter régulièrement ces conditions pour prendre connaissance des modifications éventuelles.</p>
-
-              <h3>8. Droit Applicable et Juridiction</h3>
-              <p>Les présentes Conditions d'Utilisation sont régies par le droit français. Tout litige relatif à ces conditions sera soumis à la juridiction exclusive des tribunaux français.</p>
-
-              <h3>9. Contact</h3>
-              <p>Pour toute question ou préoccupation concernant ces Conditions d'Utilisation, veuillez nous contacter à l'adresse e-mail suivante : contact@martialproduction.fr.</p>
-            </>
-          )}
+          {page === 'terms' && renderSections(t.legal.terms)}
 
           {page === 'legal' && (
             <ol className="legal-numbered-list">
-              <li><strong>Nom de l'entreprise ou du propriétaire du site :</strong> Martial Production</li>
-              <li><strong>Forme juridique :</strong> Entreprise individuelle</li>
-              <li><strong>Adresse postale :</strong> 5 Rue du Ramounat 31230, L'isle en Dodon, France</li>
-              <li><strong>Adresse e-mail de contact :</strong> contact@martialproduction.fr</li>
-              <li><strong>Numéro RCS :</strong> 920 083 094 R.C.S Toulouse</li>
-              <li><strong>Directeur de la publication :</strong> Martial Production (Propriétaire du site)</li>
-              <li><strong>Hébergeur du site :</strong> Framer</li>
-              <li><strong>Utilisation des cookies :</strong> Nous utilisons des cookies sur ce site web. Les cookies sont de petits fichiers texte stockés sur votre appareil pour améliorer votre expérience de navigation. Vous pouvez choisir d'accepter ou de refuser les cookies en modifiant les paramètres de votre navigateur.</li>
-              <li><strong>Liens externes :</strong> Ce site web peut contenir des liens vers des sites externes sur lesquels nous n'avons aucun contrôle. Nous ne sommes pas responsables du contenu de ces sites externes.</li>
-              <li><strong>Propriété intellectuelle :</strong> Les contenus de ce site web, y compris les textes, les images et les vidéos, sont protégés par les lois sur les droits d'auteur et les marques de commerce. Toute utilisation non autorisée est strictement interdite.</li>
-              <li><strong>Droit applicable :</strong> Ce site web est soumis au droit français.</li>
-              <li><strong>Date de dernière mise à jour :</strong> Les présentes mentions légales ont été mises à jour pour la dernière fois le 06/01/2025.</li>
-              <li><strong>Clause de non-responsabilité :</strong> Les informations fournies sur ce site web sont à titre informatif uniquement. Nous nous efforçons de maintenir les informations à jour et exactes, mais nous ne garantissons pas leur exhaustivité ni leur exactitude. En conséquence, nous déclinons toute responsabilité pour toute perte ou préjudice découlant de l'utilisation de ce site ou de son contenu.</li>
-              <li><strong>Politique de confidentialité :</strong> Nous ne collectons pas délibérément d'informations personnelles sur les visiteurs de notre site web, sauf si elles sont fournies volontairement par le biais de formulaires de contact ou d'autres moyens de communication. Nous nous engageons à protéger la confidentialité de ces informations et à ne pas les partager avec des tiers sans votre consentement explicite. Pour en savoir plus sur notre politique de confidentialité, veuillez nous contacter à l'adresse e-mail indiquée ci-dessus.</li>
-              <li><strong>Litiges :</strong><br />En cas de litige concernant ce site web ou son contenu, les tribunaux français auront compétence exclusive pour résoudre le différend conformément au droit français.</li>
-              <li><strong>Droit applicable :</strong><br />Ce site web est soumis au droit français, et toute utilisation de ce site est régie par les lois françaises en vigueur.</li>
+              {t.legal.notice.map((item, i) => (
+                <li key={i}><strong>{item.label}</strong>{item.lineBreak ? <br /> : ' '}{item.text}</li>
+              ))}
             </ol>
           )}
 
-          {page === 'cookies' && (
-            <>
-              <h3>1. Introduction</h3>
-              <p>1.1. Cette politique sur les cookies explique comment nous utilisons les cookies et les technologies similaires sur notre site web martialproduction.fr. En utilisant le Site, vous acceptez notre utilisation des cookies conformément à la présente politique.</p>
-
-              <h3>2. Qu'est-ce qu'un Cookie ?</h3>
-              <p>2.1. Un cookie est un petit fichier texte placé sur votre ordinateur ou appareil mobile lorsque vous visitez un site web. Les cookies sont largement utilisés pour rendre les sites web plus efficaces et améliorer votre expérience en tant qu'utilisateur.</p>
-
-              <h3>3. Types de Cookies Utilisés</h3>
-              <p>3.1. Nous utilisons les types de cookies suivants sur notre Site :</p>
-              <ul>
-                <li><strong>Cookies Strictement Nécessaires :</strong> Ces cookies sont essentiels pour vous permettre de naviguer sur le Site et d'utiliser ses fonctionnalités. Ils ne peuvent pas être désactivés.</li>
-                <li><strong>Cookies de Performance :</strong> Ces cookies collectent des informations sur la manière dont vous utilisez notre Site, telles que les pages que vous consultez le plus fréquemment. Ces données nous aident à améliorer la performance du Site.</li>
-                <li><strong>Cookies de Fonctionnalité :</strong> Ces cookies permettent au Site de mémoriser vos choix (comme votre nom d'utilisateur, la langue ou la région) et de fournir des fonctionnalités améliorées et personnalisées.</li>
-                <li><strong>Cookies de Publicité et de Ciblage :</strong> Ces cookies sont utilisés pour afficher des publicités pertinentes pour vous. Ils sont généralement placés par des tiers, tels que des réseaux publicitaires.</li>
-              </ul>
-
-              <h3>4. Gestion des Cookies</h3>
-              <p>4.1. Vous pouvez généralement gérer les cookies via les paramètres de votre navigateur. Vous pouvez choisir d'accepter, de refuser ou de supprimer les cookies. Cependant, veuillez noter que la désactivation des cookies strictement nécessaires peut affecter la fonctionnalité du Site.</p>
-              <p>4.2. Vous pouvez également configurer vos préférences de cookies lors de votre première visite sur notre Site en acceptant ou en refusant les cookies non essentiels.</p>
-
-              <h3>5. Cookies de Tiers</h3>
-              <p>5.1. Certaines fonctionnalités de notre Site peuvent être fournies par des tiers, qui peuvent également utiliser des cookies. Nous n'avons aucun contrôle sur ces cookies de tiers et vous devez consulter les politiques de confidentialité et de cookies de ces tiers pour plus d'informations.</p>
-
-              <h3>6. Contact</h3>
-              <p>6.1. Si vous avez des questions ou des préoccupations concernant notre politique sur les cookies, veuillez nous contacter à l'adresse e-mail suivante : contact@martialproduction.fr.</p>
-            </>
-          )}
+          {page === 'cookies' && renderSections(t.legal.cookies)}
         </div>
       </motion.div>
     </div>
@@ -858,18 +904,19 @@ function LegalModal({ page, onClose }: { page: LegalPage; onClose: () => void })
 }
 
 function LegalFooter() {
+  const { t } = useLang()
   const [activePage, setActivePage] = useState<LegalPage | null>(null)
   const links: Array<{ page: LegalPage; label: string }> = [
-    { page: 'terms', label: "Conditions d'utilisation" },
-    { page: 'legal', label: 'Mentions légales' },
-    { page: 'cookies', label: 'Politique sur les Cookies' },
+    { page: 'terms', label: t.footer.terms },
+    { page: 'legal', label: t.footer.legal },
+    { page: 'cookies', label: t.footer.cookies },
   ]
 
   return (
     <>
       <footer className="border-t border-white/5 px-6 pb-10 pt-8 text-center">
         <img src={logoSvg} alt="Martial Production" className="mx-auto h-24 w-auto md:h-32" />
-        <nav aria-label="Informations légales" className="mt-3 flex flex-col items-center justify-center gap-3 text-sm text-white/55 sm:flex-row sm:gap-7 md:text-base">
+        <nav aria-label={t.footer.legalNav} className="mt-3 flex flex-col items-center justify-center gap-3 text-sm text-white/55 sm:flex-row sm:gap-7 md:text-base">
           {links.map(link => (
             <button
               key={link.page}
@@ -890,6 +937,15 @@ function LegalFooter() {
 /* ─── App root ─── */
 
 export default function App() {
+  return (
+    <LangProvider>
+      <Site />
+    </LangProvider>
+  )
+}
+
+function Site() {
+  const { t } = useLang()
   React.useEffect(() => { loadCalendly() }, [])
   React.useEffect(() => {
     if (document.querySelector('script[src="https://fast.wistia.com/player.js"]')) return
@@ -907,11 +963,11 @@ export default function App() {
       <VSLSection />
       <BrandBanner />
       <CreateursSection />
-      <VideoGrid id="videos-youtube" items={youtubeVideos} label="Vidéos Youtube" accent="rgba(255,255,255,0.5)" dotColor="#d5201f" />
-      <VideoGrid id="motion-saas" items={saasVideos} label="Motion SaaS" accent="#22d3ee" />
-      <VideoGrid id="vsl-videos" items={vslVideos} label="VSL" accent={C.redLight} dotColor="#f5c842" />
-      <VideoGrid id="ads" items={adsVideos} label="ADS" accent={C.red} dotColor="#2563eb" vertical />
-      <VideoGrid id="reels" items={reelsVideos} label="Reels" accent="#a855f7" vertical />
+      <VideoGrid id="videos-youtube" items={youtubeVideos} label={t.nav.youtube} accent="rgba(255,255,255,0.5)" dotColor="#d5201f" />
+      <VideoGrid id="motion-saas" items={saasVideos} label={t.nav.saas} accent="#22d3ee" />
+      <VideoGrid id="vsl-videos" items={vslVideos} label={t.nav.vsl} accent={C.redLight} dotColor="#f5c842" />
+      <VideoGrid id="ads" items={adsVideos} label={t.nav.ads} accent={C.red} dotColor="#2563eb" vertical />
+      <VideoGrid id="reels" items={reelsVideos} label={t.nav.reels} accent="#a855f7" vertical />
       <FooterCTA />
       <LegalFooter />
     </div>
