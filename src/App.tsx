@@ -725,7 +725,7 @@ function VideoGrid({ items, label, accent, dotColor = accent, vertical = false, 
   return (
     <>
     {activeWistia && <WistiaModal mediaId={activeWistia} vertical={vertical} onClose={() => setActiveWistia(null)} />}
-    <section id={id} className="pb-16 md:pb-20 scroll-mt-36">
+    <section id={id} className="pb-16 md:pb-20 scroll-mt-24 md:scroll-mt-36">
       <div className="max-w-6xl mx-auto px-6 mb-8 flex justify-center">
         <div className="flex items-center gap-3">
           <span
@@ -958,7 +958,7 @@ function Site() {
         background: 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(160,60,10,0.38) 0%, rgba(100,30,5,0.18) 40%, transparent 70%)'
       }} />
       <Navbar />
-      <div className="h-[136px] md:h-[104px]" aria-hidden="true" />
+      <div className="h-[88px] md:h-[104px]" aria-hidden="true" />
       <Hero />
       <VSLSection />
       <BrandBanner />

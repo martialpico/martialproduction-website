@@ -370,7 +370,7 @@ html, body {
 }
 
 .mobile-header-position {
-  top: max(4.25rem, calc(env(safe-area-inset-top) + 0.5rem));
+  top: max(0.75rem, calc(env(safe-area-inset-top) + 0.5rem));
 }
 
 @media (min-width: 768px) {
